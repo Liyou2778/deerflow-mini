@@ -1,0 +1,5 @@
+# deerflow-mini runtime dependencies
+# Already installed in the shared venv at replicas/.venv
+fastapi>=0.110
+uvicorn>=0.27
+httpx>=0.24

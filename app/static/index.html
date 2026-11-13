@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>deerflow-mini · planner → researchers → writer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="logo">◈</span>
+        <span class="brand-text">deerflow<span class="accent">-mini</span></span>
+        <span class="badge">MVP</span>
+      </div>
+
+      <button id="new-session-btn" class="new-session">+ New session</button>
+
+      <div class="section-label">Sessions</div>
+      <ul id="session-list" class="session-list"></ul>
+
+      <div class="sidebar-foot">
+        <div class="health" id="health-info">connecting…</div>
+        <div class="foot-note">FastAPI · SSE · in-memory<br />offline by default</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title-wrap">
+          <h1 id="session-title">deerflow-mini</h1>
+          <p id="session-meta">planner → 3 parallel researchers → writer · mock LLM</p>
+        </div>
+        <div class="conn" id="conn-state" data-state="idle">
+          <span class="dot"></span>
+          <span id="conn-label">idle</span>
+        </div>
+      </header>
+
+      <section class="panel timeline-panel">
+        <div class="section-head">
+          <h2>Run timeline</h2>
+          <span class="section-meta" id="run-meta"></span>
+        </div>
+        <div id="timeline" class="timeline">
+          <div class="empty">Run a query to watch the planner, researchers and writer execute.</div>
+        </div>
+      </section>
+
+      <section class="chat">
+        <div class="answer-head">
+          <span class="answer-label">Answer</span>
+          <span class="answer-stream" id="answer-stream-state">no active run</span>
+        </div>
+        <div id="answer" class="answer">
+          <div class="answer-placeholder">
+            <h3>Ask a research question</h3>
+            <p>The mock LLM is deterministic and fully offline. Try <code>How do multi-agent research pipelines handle context budgets and resumable streams?</code></p>
+          </div>
+        </div>
+        <div id="citations" class="citations"></div>
+
+        <form id="query-form" class="composer">
+          <textarea id="query-input" rows="2" placeholder="Ask a research question… (Ctrl+Enter to send)"></textarea>
+          <div class="composer-actions">
+            <span class="composer-hint" id="composer-hint">SSE stream · Last-Event-ID resume</span>
+            <button type="button" id="cancel-btn" class="btn danger" hidden>■ Stop run</button>
+            <button type="submit" id="send-btn" class="btn primary">Send ↯</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <aside class="trace">
+      <div class="section-head">
+        <h2>Trace</h2>
+        <span class="section-meta" id="trace-status">—</span>
+      </div>
+
+      <div class="trace-tiles" id="trace-summary">
+        <div class="tile"><span class="tile-label">events</span><span class="tile-value" id="tile-events">0</span></div>
+        <div class="tile"><span class="tile-label">duration</span><span class="tile-value" id="tile-duration">—</span></div>
+        <div class="tile"><span class="tile-label">tokens out</span><span class="tile-value" id="tile-tokens">0</span></div>
+        <div class="tile"><span class="tile-label">citations</span><span class="tile-value" id="tile-citations">0</span></div>
+      </div>
+
+      <div class="trace-block">
+        <div class="trace-block-head">
+          <span>Nodes</span>
+          <span class="muted">duration · tokens</span>
+        </div>
+        <table class="trace-table">
+          <thead>
+            <tr><th>node</th><th>status</th><th>ms</th><th>tok</th></tr>
+          </thead>
+          <tbody id="trace-body">
+            <tr class="trace-empty"><td colspan="4">no run yet</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="trace-block">
+        <div class="trace-block-head"><span>Context budget</span><span class="muted" id="budget-strategy">—</span></div>
+        <div id="budget-panel" class="budget-panel">
+          <div class="muted">Waiting for researcher fan-in…</div>
+        </div>
+      </div>
+
+      <div class="trace-block">
+        <div class="trace-block-head">
+          <span>Stream</span>
+          <span class="muted" id="buffer-label">buffer 500</span>
+        </div>
+        <div class="stream-info">
+          <div><span class="muted">Last-Event-ID</span> <strong id="last-event-id">0</strong></div>
+          <div><span class="muted">seq gaps</span> <strong id="seq-gaps">0</strong></div>
+          <div><span class="muted">reconnects</span> <strong id="reconnects">0</strong></div>
+        </div>
+        <button type="button" id="drop-btn" class="btn ghost" disabled>⏸ Simulate drop + resume</button>
+      </div>
+
+      <div class="trace-block event-log-block">
+        <div class="trace-block-head"><span>Event log</span><span class="muted">newest first</span></div>
+        <ul id="event-log" class="event-log"></ul>
+      </div>
+    </aside>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
